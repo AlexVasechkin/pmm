@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  pmm-server:
+    container_name: mon_pmm-server
+    image: percona/pmm-server:2
+    ports:
+      - "3080:80"
+    volumes:
+      - mon-pmm-server-vol:/srv
+    networks:
+      - pmm-network
+
+  pmm-client:
+    container_name: mon_pmm-client
+    build:
+      context: ./pmm-client
+    command: ["pmm-agent", "run", "--config-file=/root/pmm-config.yaml"]
+    volumes:
+      - ./pmm-client/pmm-config.yaml:/root/pmm-config.yaml
+    networks:
+      - pmm-network
+
+volumes:
+  mon-pmm-server-vol:
+
+networks:
+  pmm-network:
+    external: true
