@@ -1,0 +1,2 @@
+CREATE USER pmm WITH PASSWORD '2d106g20';
+GRANT pg_monitor TO pmm;

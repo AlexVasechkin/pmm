@@ -37,16 +37,25 @@ docker exec -it mon_pmm-client /bin/bash
 pmm-admin config --server-insecure-tls --server-url=https://admin:<пароль>@mon_pmm-server:443
 ```
 
-6. Добавить контейнер целевой СУБД. Необходимо добавить контейнер СУБД в pmm-network, чтобы pmm-client мог получить у нему доступ. Пример конфигурации в ./database/docker-compose.yaml
-7. Как и в п.4 необходимо внутри контейнера mon_pmm-client подключить целевую СУБД:
+6. Добавить контейнер целевой СУБД. Необходимо добавить контейнер СУБД в `pmm-network`, чтобы `pmm-client` мог получить у нему доступ. Пример конфигурации в `./database/docker-compose.yaml`
+
+7. Создать пользователя СУБД. Примеры в `mysql_user.sql` и `postgres_user.sql`.
+
+8. Как и в п.4 необходимо внутри контейнера `mon_pmm-client` подключить целевую СУБД:
 
 ```bash
-pmm-admin add mysql <имя хоста dashboard> <db_host>:<db_port> --username=<db_username> --password=<db_password> --query-source=perfschema
-pmm-admin add postgresql <имя хоста dashboard> <db_host>:<db_port> --username=<db_username> --password=<db_password>
+pmm-admin add mysql <имя сервера СУБД для отображения в Grafana> <db_host>:<db_port> \
+ --username=<db_user, например pmm> \
+ --password=<db_password> \
+ --query-source=perfschema
+
+pmm-admin add postgresql <имя сервера СУБД для отображения в Grafana> <db_host>:<db_port> \
+ --username=<db_user, например pmm> \
+ --password=<db_password>
 ```
 
 ### Важно
 
 пользователь бд, под которым выполняется подключение должен иметь привилегии SELECT, PROCESS, REPLICATION CLIENT, RELOAD и BACKUP_ADMIN.
 На local окружении можно подключить под root.
-На prod необходимо создать пользователя и дать ему привилегии. Пример запросов на создание и выдачу привилегий в файле ./create_pmm_user.sql
+На prod необходимо создать пользователя и дать ему привилегии. Пример запросов на создание и выдачу привилегий в файле `./create_pmm_user.sql`
